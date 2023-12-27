@@ -1,7 +1,7 @@
 const express =  require("express")
 const products = require("../Models/ProductSchema")
 const router  = express.Router()
-
+const stripe = require("stripe")("sk_test_51ORtMEAmRaMI31IDtwJhHGcK21PoEPRubq43F3qFk00RXrgtTHm0por7hLAMDI9AhnTbGwWjBVaapDuIGQu3gWw000UjtgARj6")
 
 
 // filtering API on the basis of minimum price
@@ -129,16 +129,7 @@ router.get("/featured",async(req,res)=>{
 })
 
 
-// filtering API on the basis of Size 
 
-router.get("/bestsellingitem",async(req,res)=>{
-     try {
-        const bestSellingItem = await products.find().sort({size:1})
-        res.status(200).json({message:bestSellingItem})
-     } catch (error) {
-        res.status(500).json({message:"Internal Server Error"}) 
-     }
-})
 
 
 // filtering API on the Search  
@@ -212,6 +203,34 @@ router.get("/allsizes",async(req,res)=>{
      }
 })
 
+// Payment gateway
+
+router.post("/create-checkout-session",async (req,res)=>{
+     const {products} = req.body 
+     console.log(products)
+   
+     const lineItems = products.map(product=>({
+         price_data:{
+            currency:"usd",
+            product_data:{
+                name:product.productTitle,
+                description:"payment"
+            },
+            unit_amount:product.productPrice * 100
+         },
+         quantity:product.quantity
+     }))
+     const session = await stripe.checkout.sessions.create({
+        payment_method_types:["card"],
+        line_items:lineItems,
+        mode:"payment",
+        success_url:`http://localhost:5173/order/success`,
+        cancel_url:`http://localhost:5173/order/cancel/`,
+
+     })
+     res.json({id:session.id})
+     
+} )
 
 
 
