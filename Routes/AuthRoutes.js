@@ -95,6 +95,16 @@ router.get("/getuser",fetchUser,async(req,res)=>{
         res.status(500).json({message:"Internal Server Error"})
      }
 })
+router.get("/totalusers",async(req,res)=>{
+     try {
+        const totalUsers = await auth.find()
+        res.json({message:totalUsers})
+        
+     } catch (error) {
+        res.status(500).json({message:"Internal Server Error"})
+     }
+})
+
 
 
 

@@ -101,4 +101,77 @@ router.get("/getsingleproduct/:id", async (req, res) => {
   }
 });
 
+
+
+// Delete Product API
+
+router.delete("/deleteproduct/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const isProductExist = await products.findById(id);
+
+
+    if (!isProductExist) {
+      return res.status(404).json({ message: "Product not exist" });
+    }
+
+   await products.findByIdAndDelete(id)
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
+// Update Product API
+
+router.put("/updateproduct/:id", async (req, res) => {
+
+  const id = req.params.id;
+  try {
+    const isProductExist = await products.findById(id);
+
+    if (!isProductExist) {
+      return res.status(404).json({ message: "Product not exist" });
+    }
+
+   const body = req.body
+
+   const updatedproduct =  await  products.findByIdAndUpdate(id,body,{new:true})
+    res.status(200).json({ message: updatedproduct });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
+// Delete API
+
+router.delete("/deleteproduct/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const isProductExist = await products.findById(id);
+
+
+    if (!isProductExist) {
+      return res.status(404).json({ message: "Product not exist" });
+    }
+
+   await products.findByIdAndDelete(id)
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
